@@ -35,6 +35,7 @@ async function run() {
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
         const allCategoryJob = client.db("assignment-011").collection('allJobs')
+        const allPostsData = client.db("assignment-011").collection('allPosts')
 
         app.get('/allCategoryJob', async (req, res) => {
             const cursor = allCategoryJob.find();
@@ -55,6 +56,31 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const result = await allCategoryJob.findOne(query);
             res.send(result);
+        })
+
+
+        // all posted data get
+        app.get('/allPostsData', async (req, res) => {
+            const cursor = allPostsData.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        // insert a new post
+        app.post('/allPostsData', async (req, res) => {
+            const newData = req.body;
+            const newDataInserted = await allPostsData.insertOne(newData)
+            res.send(newDataInserted)
+            // console.log(newData);
+        })
+
+        // get all posts of single user
+        app.get(`/allPostsData/:email`, async (req, res) => {
+            const email = req.params.email;
+            const query = { userEmail: email }
+            const cursor = allPostsData.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
         })
     } finally {
         // Ensures that the client will close when you finish/error
