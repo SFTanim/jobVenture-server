@@ -59,12 +59,33 @@ async function run() {
         })
 
 
+
+
         // all posted data get
         app.get('/allPostsData', async (req, res) => {
             const cursor = allPostsData.find()
             const result = await cursor.toArray()
             res.send(result)
         })
+
+        app.get('/allPostsData/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const result = await allPostsData.findOne(query);
+            console.log(result);
+            res.send(result);
+        })
+        // get all posts of single user
+        app.get(`/allPostsDataWithMail/:email`, async (req, res) => {
+            const email = req.params.email;
+            const query = { userEmail: email }
+            const cursor = allPostsData.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+
 
         // insert a new post
         app.post('/allPostsData', async (req, res) => {
@@ -74,14 +95,6 @@ async function run() {
             // console.log(newData);
         })
 
-        // get all posts of single user
-        app.get(`/allPostsData/:email`, async (req, res) => {
-            const email = req.params.email;
-            const query = { userEmail: email }
-            const cursor = allPostsData.find(query);
-            const result = await cursor.toArray()
-            res.send(result)
-        })
 
         // get all posts of single user
         app.delete(`/allPostsData/:id`, async (req, res) => {
@@ -99,7 +112,7 @@ async function run() {
             const findingSpecificData = { _id: new ObjectId(id) };
             const options = { upsert: true };
             const updatingData = {
-                $set: {                    
+                $set: {
                     ApplicationDeadLine: updateData.ApplicationDeadLine,
                     jobDescription: updateData.jobDescription,
                     jobTitle: updateData.jobTitle,
@@ -112,6 +125,26 @@ async function run() {
             }
             const result = await allPostsData.updateOne(findingSpecificData, updatingData, options)
             res.send(result);
+        })
+
+
+        // Applied Data
+        app.post('/allApplied/:id', async (req, res) => {
+            const id = req.params.id;
+            const appliedPerson = req.body;
+            const specificJob = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const addAppliedPerson = {
+                $push: {
+                    appliedPersons: appliedPerson.appliedPerson,
+                    // applicantNumber: appliedPerson.addAApplicant
+
+                }
+            }
+            const result = await allPostsData.updateOne(specificJob, addAppliedPerson, options)
+            res.send(result)
+            console.log(result);
+            console.log(id, appliedPerson.appliedPerson, appliedPerson.addAApplicant);
         })
     } finally {
         // Ensures that the client will close when you finish/error
