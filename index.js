@@ -38,7 +38,7 @@ async function run() {
         const allPostsData = client.db("assignment-011").collection('allPosts')
 
         app.get('/allCategoryJob', async (req, res) => {
-            const cursor = allCategoryJob.find();
+            const cursor = allPostsData.find();
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -46,7 +46,7 @@ async function run() {
         app.get('/allCategoryJob/:category', async (req, res) => {
             const params = req.params.category;
             const query = { category: params };
-            const cursor = allCategoryJob.find(query);
+            const cursor = allPostsData.find(query);
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -54,7 +54,7 @@ async function run() {
         app.get('/allCategory/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            const result = await allCategoryJob.findOne(query);
+            const result = await allPostsData.findOne(query);
             res.send(result);
         })
 
@@ -92,7 +92,7 @@ async function run() {
             const newData = req.body;
             const newDataInserted = await allPostsData.insertOne(newData)
             res.send(newDataInserted)
-            // console.log(newData);
+          
         })
 
 
@@ -118,9 +118,9 @@ async function run() {
                     jobTitle: updateData.jobTitle,
                     postingDate: updateData.postingDate,
                     salaryRange: updateData.salaryRange,
-                    applicantNumber: updateData.applicantNumber,
+                    applicantNumber: Number(updateData.applicantNumber),
                     jobCategory: updateData.jobCategory,
-                    bannerPic: updateData.bannerPic,
+                    bannerPic: updateData.bannerPic
                 }
             }
             const result = await allPostsData.updateOne(findingSpecificData, updatingData, options)
@@ -136,15 +136,16 @@ async function run() {
             const options = { upsert: true };
             const addAppliedPerson = {
                 $push: {
-                    appliedPersons: appliedPerson.appliedPerson,
-                    // applicantNumber: appliedPerson.addAApplicant
-
+                    appliedPersons: appliedPerson.appliedPerson
+                },
+                $inc: {
+                    applicantNumber: 1
                 }
             }
             const result = await allPostsData.updateOne(specificJob, addAppliedPerson, options)
             res.send(result)
             console.log(result);
-            console.log(id, appliedPerson.appliedPerson, appliedPerson.addAApplicant);
+            console.log(id, appliedPerson.appliedPerson, "applicant", appliedPerson.addAApplicant);
         })
     } finally {
         // Ensures that the client will close when you finish/error
