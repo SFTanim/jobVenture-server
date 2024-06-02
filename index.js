@@ -82,6 +82,37 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+
+        // get all posts of single user
+        app.delete(`/allPostsData/:id`, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await allPostsData.deleteOne(query)
+            res.send(result)
+        })
+
+        // update data
+        app.put('/allPostsData/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateData = req.body;
+
+            const findingSpecificData = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatingData = {
+                $set: {                    
+                    ApplicationDeadLine: updateData.ApplicationDeadLine,
+                    jobDescription: updateData.jobDescription,
+                    jobTitle: updateData.jobTitle,
+                    postingDate: updateData.postingDate,
+                    salaryRange: updateData.salaryRange,
+                    applicantNumber: updateData.applicantNumber,
+                    jobCategory: updateData.jobCategory,
+                    bannerPic: updateData.bannerPic,
+                }
+            }
+            const result = await allPostsData.updateOne(findingSpecificData, updatingData, options)
+            res.send(result);
+        })
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
