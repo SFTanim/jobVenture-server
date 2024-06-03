@@ -6,7 +6,10 @@ const port = process.env.PORT || 5000;
 require('dotenv').config();
 
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+        // "http://localhost:5173",
+        "https://assignment-011-41fa0.web.app",
+        "https://assignment-011-41fa0.firebaseapp.com"],
     credentials: true
 }));
 app.use(express.json());
@@ -28,8 +31,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect();
-        await client.db("admin").command({ ping: 1 });
+        // await client.connect();
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
         const allPostsData = client.db("assignment-011").collection('allPosts')
@@ -89,7 +92,7 @@ async function run() {
             const newData = req.body;
             const newDataInserted = await allPostsData.insertOne(newData)
             res.send(newDataInserted)
-          
+
         })
 
 
