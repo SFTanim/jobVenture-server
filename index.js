@@ -7,7 +7,7 @@ require('dotenv').config();
 
 app.use(cors({
     origin: [
-        // "http://localhost:5173",
+        "https://radiant-mooncake-bb00d0.netlify.app",
         "https://assignment-011-41fa0.web.app",
         "https://assignment-011-41fa0.firebaseapp.com"],
     credentials: true
